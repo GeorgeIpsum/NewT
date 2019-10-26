@@ -1,0 +1,65 @@
+{
+  "manifest_version": 2,
+  "name": "NewT",
+  "version": "0.1.0",
+
+  "default_locale": "en",
+  "description": "An all-in-one new tab page",
+  "icons": {
+    "16": "icon/NewT16.png",
+    "48": "icon/NewT48.png",
+    "128": "icon/NewT128.png"
+  },
+
+  "browser_action": {
+    "default_icon": {
+      "16": "icon/NewT16.png",
+      "48": "icon/NewT48.png",
+      "128": "icon/NewT128.png"
+    }
+  },
+
+  "author": "Ibrahim Saberi",
+  "background": {
+    "scripts": [
+      "background.js"
+    ],
+    "persistent": false,
+    "service_worker": false
+  },
+  "chrome_url_overrides": {
+    "newtab": "newpage.html"
+  },
+  "content_security_policy": "policyString",
+  "devtools_page": "devtools.html",
+  "externally_connectable": {
+    "matches": ["*://*.example.com/*"]
+  },
+  "file_system_provider_capabilities": {
+    "configurable": true,
+    "multiple_mounts": true,
+    "source": "network"
+  },
+  "homepage_url": "https://georgeipsum.github.io/NewT",
+  "import": [{"id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}],
+  "incognito": "spanning",
+  "key": "publicKey",
+  "minimum_chrome_version": "72",
+  "offline_enabled": true,
+  "omnibox": {
+    "keyword": "aString"
+  },
+  "optional_permissions": ["tabs"],
+  "options_page": "options.html",
+  "options_ui": {
+    "chrome_style": true,
+    "page": "options.html"
+  },
+  "permissions": ["tabs"],
+  "short_name": "NewT",
+  "storage": {
+    "managed_schema": "schema.json"
+  },
+  "update_url": "http://path/to/updateInfo.xml",
+  "version_name": "0.1.0"
+}
