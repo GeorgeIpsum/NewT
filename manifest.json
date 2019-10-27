@@ -3,7 +3,6 @@
   "name": "NewT",
   "version": "0.1.0",
 
-  "default_locale": "en",
   "description": "An all-in-one new tab page",
   "icons": {
     "16": "icon/NewT16.png",
@@ -24,13 +23,12 @@
     "scripts": [
       "background.js"
     ],
-    "persistent": false,
-    "service_worker": false
+    "persistent": false
   },
   "chrome_url_overrides": {
     "newtab": "newpage.html"
   },
-  "content_security_policy": "policyString",
+  "content_security_policy": "script-src 'self'; object-src 'self'",
   "devtools_page": "devtools.html",
   "externally_connectable": {
     "matches": ["*://*.example.com/*"]
@@ -41,15 +39,12 @@
     "source": "network"
   },
   "homepage_url": "https://georgeipsum.github.io/NewT",
-  "import": [{"id": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"}],
   "incognito": "spanning",
-  "key": "publicKey",
   "minimum_chrome_version": "72",
   "offline_enabled": true,
   "omnibox": {
     "keyword": "aString"
   },
-  "optional_permissions": ["tabs"],
   "options_page": "options.html",
   "options_ui": {
     "chrome_style": true,
