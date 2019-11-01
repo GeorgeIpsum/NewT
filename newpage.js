@@ -9,11 +9,15 @@ document.addEventListener("DOMContentLoaded", () => {
       clearInterval(timer);
     });
   }
+
+  setTimeout(() => {
+    determineBodyBg(new Date().getHours());
+  }, 150);
 });
 
 const setTimerElement = () => {
   const date = new Date();
-  const hour = date.getHours();
+  const hour = date.getHours() > 12 ? date.getHours() - 12 : date.getHours();
   const minutes = date.getMinutes();
   const dateString = hour + ':' + minutes;
   const formattedDateString = date.toISOString();
@@ -27,23 +31,43 @@ const setTimerElement = () => {
   }
 }
 
-const isEventSupported = (function() {
-  const TAGNAMES = {
-    'select':'input','change':'input',
-    'submit':'form','reset':'form',
-    'error':'img','load':'img','abort':'img',
-    'beforeunload':'window','unload':'window'
-  };
-  function isEventSupported(eventName) {
-    let el = document.createElement(TAGNAMES[eventName] || 'div');
-    eventName = 'on' + eventName;
-    let isSupported = (eventName in el);
-    if(!isSupported) {
-      el.setAttribute(eventName, 'return;');
-      isSupported = typeof el[eventName] === 'function';
-    }
-    el = null;
-    return isSupported;
+const determineBodyBg = (hour) => {
+  const colorMap = determineColorMap(hour);
+  if(getComputedStyle(document.documentElement).getPropertyValue('--bg-color') !== colorMap.bg) {
+    document.documentElement.style.setProperty('--bg-color', colorMap.bg);
+    document.documentElement.style.setProperty('--text-color', colorMap.text);
   }
-  return isEventSupported;
-})();
+}
+
+const determineColorMap = (hour) => {
+  const colorMap = {
+    day: {
+      bg: "#87CEEB",
+      text: "#160A47"
+    },
+    sunrise: {
+      bg: "#FFCA7C",
+      text: "#160A47"
+    },
+    sunset: {
+      bg: "#FEC051",
+      text: "#160A47"
+    },
+    evening: {
+      bg: "#160A47",
+      text: "#87CEEB"
+    }
+  };
+
+  if(hour>=19||hour<6) { //evening
+    return colorMap.evening;
+  } else if(hour>=6&&hour<8) { //sunrise
+    return colorMap.sunrise;
+  } else if(hour>=8&&hour<17) { //day
+    return colorMap.day;
+  } else if(hour>=17&&hour<19) { //sunset
+    return colorMap.sunset;
+  } else { //default to day
+    return colorMap.day;
+  }
+}

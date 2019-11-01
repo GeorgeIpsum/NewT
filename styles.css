@@ -1,2 +1,2 @@
-body{width:100%;height:100vh;overflow:hidden;display:flex;background-color:#0F1533;color:#fffffe}
+:root{--bg-color: #87CEEB;--text-color: #160A47}body{transition:all 450ms ease;width:100%;height:100vh;overflow:hidden;display:flex;background:var(--bg-color);color:var(--text-color)}
 /*# sourceMappingURL=styles.css.map */
