@@ -8,8 +8,7 @@ chrome.storage.sync.get(['growth'], function(result) {
       growth = 0;
     })
   }
-
-  growth = new Number(result.key);
+  growth = new Number(result.growth);
 });
 
 document.addEventListener("DOMContentLoaded", () => {
