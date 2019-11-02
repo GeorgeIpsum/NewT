@@ -1,5 +1,6 @@
 let growth = 0;
 let cancelGrowth;
+const TREE_MAX_GROWTH = 1000;
 
 chrome.storage.sync.get(['growth'], function(result) {
   if(!result) {
@@ -57,13 +58,70 @@ const animateIn = () => {
 }
 
 const grow = (initialGrowth) => {
-  let growth = new Number(initialGrowth);
+  let growth = initialGrowth;
+  const canvas = document.getElementById("tree");
+  canvas.getContext("2d").clearRect(0,0,canvas.width,canvas.height);
+
+  doInitialGrowth(initialGrowth);
+
   cancelGrowth = setInterval(() => {
     growth += 1;
     chrome.storage.sync.set({growth}, () => {
       console.log(`Growth at level ${growth}!`);
     });
-  }, 5000);
+
+    growCanvas(growth);
+  }, 2500);
+}
+
+const doInitialGrowth = (growth) => {
+  const canvas = document.getElementById("tree");
+  const duration = 2500;
+  const ctx = canvas.getContext("2d");
+  const cWidth = canvas.width; const cHeight = canvas.height;
+  const midWidth = cWidth / 2;
+  const leftAnchor = midWidth - 100;
+  const progress = growth/TREE_MAX_GROWTH > 1 ? 1 : growth/TREE_MAX_GROWTH;
+  const fillAmount = Math.round(cHeight*(1-progress));
+
+  let start = null;
+  let end = null;
+  let stop = false;
+
+  function startAnim(timeStamp) {
+    start = timeStamp;
+    end = start + duration;
+    draw(timeStamp);
+  }
+
+  function draw(now) {
+    if (stop) return;
+    if (now - start >= duration) stop = true;
+    const percent = (now - start) / duration;
+    const eased = inOutQuad(percent);
+    const fillAmt = cHeight-fillAmount;
+    const work = fillAmt*(1-eased);
+
+    ctx.fillRect(leftAnchor, fillAmount+work, 200, cHeight);
+    window.requestAnimationFrame(draw);
+  }
+
+  window.requestAnimationFrame(startAnim);
+}
+
+const growCanvas = (growth) => {
+  const canvas = document.getElementById("tree");
+  if(canvas && canvas.getContext) {
+    const ctx = canvas.getContext("2d");
+    const cWidth = canvas.width; const cHeight = canvas.height;
+    const midWidth = cWidth / 2;
+    
+    const leftAnchor = midWidth - 100;
+    const progress = growth/TREE_MAX_GROWTH > 1 ? 1 : growth/TREE_MAX_GROWTH;
+    const fillAmount = Math.round(cHeight*(1-progress));
+    ctx.clearRect(0,0,cWidth,cHeight);
+    ctx.fillRect(leftAnchor, fillAmount, 200, cHeight);
+  }
 }
 
 const setCanvas = () => {
