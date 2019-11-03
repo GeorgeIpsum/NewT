@@ -1,0 +1,249 @@
+#!/bin/bash
+
+function gen () {
+  local type=$1
+  local name=$2
+  local filename=''
+  local internal=''
+  local kebab=''
+
+  if [ -z "$name" ]; then
+    echo "No name provided"
+    exit 0
+  fi
+
+  while IFS='-' read -ra ADDR; do
+    for i in "${ADDR[@]}"; do
+      internal="${internal}$(tr '[:lower:]' '[:upper:]' <<< ${i:0:1})${i:1}"
+    done
+  done <<< "$name"
+
+  while IFS='-' read -ra ADDR; do
+    for i in "${!ADDR[@]}"; do
+      if [ $(($i+1)) = ${#ADDR[@]} ]; then
+        kebab="${kebab}$(tr '[:lower:]' '[:upper:]' <<< ${ADDR[$i]:0:1})${ADDR[$i]:1}"
+      else
+        kebab="${kebab}$(tr '[:lower:]' '[:upper:]' <<< ${ADDR[$i]:0:1})${ADDR[$i]:1}-"
+      fi
+    done
+  done <<< "$name"
+
+  if [ "$type" = "c" ] || [ "$type" = "component" ] || [ "$type" = "d" ] || [ "$type" = "dummy" ] || [ "$type" = "segment" ] || [ "$type" = "s" ]; then
+    if [ "$type" = "c" ] || [ "$type" = "component" ]; then
+      filename="src/components/${name}"
+    elif [ "$type" = "s" ] || [ "$type" = "segment" ]; then
+      filename="src/segments/${name}"
+    else
+      filename="src/dummies/${name}"
+    fi
+    
+    if [ -d "$filename" ]; then
+      echo "Component with name ${internal} already exists."
+      exit 0
+    fi
+
+    mkdir -p $filename
+
+    cat << EOF > ${filename}/${name}.scss
+@import '../../assets/styles.scss';
+
+.${kebab} {}
+
+EOF
+
+    if [ "$type" = "c" ] || [ "$type" = "component" ] || [ "$type" = "s" ] || [ "$type" = "segment" ]; then
+      cat << EOF > ${filename}/${name}.tsx
+import React from 'react';
+import './${name}.scss';
+
+type ${internal}Props = {};
+type ${internal}State = {};
+
+export default class ${internal} extends React.Component<${internal}Props, ${internal}State> {
+  render() {
+    return(
+      <div className="${kebab}"></div>
+    );
+  }
+}
+
+EOF
+
+    else
+      cat << EOF > ${filename}/${name}.tsx
+import React from 'react';
+import './${name}.scss';
+
+export default function ${internal}(props) {
+  return(
+    <div className="${kebab}"></div>
+  );
+}
+
+EOF
+
+    fi
+
+    cat << EOF > ${filename}/${name}.test.tsx
+import React from 'react';
+import { render } from '@testing-library/react';
+import ${internal} from './${name}';
+
+describe("${internal}", () => {
+  it('renders and unmounts without crashing', () => {
+    const { unmount } = render(<${internal} />);
+    unmount(); 
+  });
+});
+
+EOF
+    
+    cat << EOF > ${filename}/index.ts
+export { default } from './${name}';
+
+EOF
+
+  elif [ "$type" = "m" ] || [ "$type" = "model" ]; then
+    filename="src/models/${name}"
+    local liststore="${name}-list-store"
+    local l=''
+
+    while IFS='-' read -ra ADDR; do
+      for i in "${!ADDR[@]}"; do
+        if [ $i = 0 ]; then
+          l=${ADDR[${i}]}
+        else
+          l="${l}$(tr '[:lower:]' '[:upper:]' <<< ${ADDR[$i]:0:1})${ADDR[$i]:1}"
+        fi
+      done
+    done <<< "$name"
+
+    local lsi="${internal}ListStore"
+
+    if [ -d "$filename" ]; then
+      echo "Model with name ${internal} already exists."
+      exit 0
+    fi
+
+    mkdir -p $filename
+
+    cat << EOF > ${filename}/${name}.ts
+import { types } from 'mobx-state-tree';
+
+export const ${internal}Model = types.model("${internal}")
+  .props({
+    id: types.optional(types.identifier, 'xxxxxxxx-xxxx-Mxxx-Nxxx-xxxxxxxxxxxx'),
+  });
+
+type ${internal}Type = typeof ${internal}Model.Type;
+export interface ${internal} extends ${internal}Type {};
+
+type ${internal}SnapshotType = typeof ${internal}Model.SnapshotType;
+export interface ${internal}Snapshot extends ${internal}SnapshotType {};
+EOF
+
+    cat << EOF > ${filename}/${liststore}.ts
+import { types, getRoot, getEnv } from 'mobx-state-tree';
+import { Environment } from '../environment';
+import { LoadingStatus } from '../status';
+import { ${internal}Model, ${internal}, ${internal}Snapshot } from './${name}';
+import { UUIDGenerator } from '../../utilities/helpers';
+
+export const ${lsi}Model = types.model("${lsi}")
+  .props({
+    status: types.optional(types.enumeration<LoadingStatus>("${internal}ListLoadingStatus", Object.values(LoadingStatus)), LoadingStatus.idle),
+    ${l}s: types.optional(types.array(${internal}Model), []),
+  })
+  .actions(self => ({
+    setStatus(value: LoadingStatus) {
+      self.status = value;
+    },
+    set${internal}s(value?: ${internal}[] | ${internal}Snapshot[]) {
+      if(value) {
+        if(self.${l}s) {
+          self.${l}s.replace(value as any);
+        } else {
+          self.${l}s = value as any;
+        }
+      } else {
+        self.${l}s.clear();
+      }
+    },
+    add${internal}() {
+      if(self.${l}s) {
+        const ${l}: ${internal} = ${internal}Model.create({
+          id: UUIDGenerator(),
+        });
+        const ${l}s = [...self.${l}s, ...[${l}]];
+        self.${l}s.replace(${l}s as any);
+        return true;
+      } return false;
+    },
+    change${internal}(index, value: ${internal}) {
+      if(self.${l}s && self.${l}s[index]) {
+        if(value) {
+          //implement value change code
+          return true;
+        } return false;
+      } return false;
+    }
+  }))
+  .views(self => ({
+    get environment() {
+      return getEnv(self) as Environment;
+    },
+    get rootStore() {
+      return getRoot(self) as any;
+    },
+    get isLoading() {
+      return self.status === "pending";
+    },
+  }))
+  .actions(self => ({
+    findById(id: string) {
+      if(self.${l}s) {
+        const value = self.${l}s.find((v) => v.id === id);
+        if(value) {
+          return value;
+        } return false;
+      } return false;
+    }
+  }));
+
+type ${internal}StoreType = typeof ${lsi}Model.Type;
+export interface ${internal}Store extends ${internal}StoreType {};
+
+EOF
+
+    cat << EOF > ${filename}/index.ts
+export * from './${name}';
+export * from './${liststore}';
+
+EOF
+
+  elif [ "$type" = "a" ] || [ "$type" = "api"]; then
+    echo "Coming Soon"
+    filename="src/services/${name}"
+
+    if [ -d "$filename" ]; then
+      echo "API with name ${internal} already exists."
+      exit 0
+    fi
+
+  elif [ "$type" = "u" ] || [ "$type" = "utility" ]; then
+    filename="src/utilities/${name}.ts"
+
+    if [ -d "$filename" ]; then
+      echo "Utility with name ${name} already exists."
+      exit 0
+    fi
+
+    printf '%s\n' "//${name}.ts utility" > $filename
+
+  else
+    echo "Invalid arguments"
+  fi
+
+}
+
+gen $1 $2

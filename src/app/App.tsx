@@ -1,24 +1,36 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect, useState } from 'react';
+import { loadString, save } from '../utilities';
 import './App.css';
+import TreePicker from '../components/tree-picker';
+import Tree from '../components/tree';
+import Clock from '../dummies/clock';
+import Weather from '../dummies/weather';
 
 const App: React.FC = () => {
+  const [firstTime, setFirstTime] = useState(false);
+
+  useEffect(() => {
+    const init = loadString("init");
+    if(init) {
+
+    } else {
+
+    }
+  });
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <div className="top-row">
+        { firstTime ? 
+          <TreePicker /> :
+          <Tree />
+        }
+        <Weather />
+        <Clock />
+      </div>
+      <div className="bottom-row">
+
+      </div>
     </div>
   );
 }

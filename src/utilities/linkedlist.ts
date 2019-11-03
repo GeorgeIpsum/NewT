@@ -1,23 +1,26 @@
-class LLNode {
-  element;
-  next;
-  toString;
-  constructor(element) {
+export class LLNode {
+  element: any;
+  next: LLNode | null;
+  toString: () => string;
+
+  constructor(element: any, toString: () => string) {
     this.element = element;
     this.next = null;
+
+    this.toString = toString;
   }
 }
 
-class LinkedList {
-  head;
-  size;
+export class LinkedList {
+  head: LLNode | null;
+  size: number;
   constructor() {
     this.head = null;
     this.size = 0;
   }
 
-  add(element) {
-    let node = new LLNode(element);
+  add(element: any) {
+    let node = new LLNode(element.el, element.toString);
     let current;
     if(this.head == null)  this.head = node;
     else {
@@ -32,10 +35,10 @@ class LinkedList {
     this.size++;
   }
 
-  insertAt(element, index) {
+  insertAt(element: any, index: number) {
     if(index > 0 && index > this.size) return false;
     else {
-      let node = new LLNode(element);
+      let node = new LLNode(element.el, element.toString);
       let curr, prev;
 
       curr = this.head;
@@ -61,7 +64,7 @@ class LinkedList {
     }
   }
 
-  removeFrom(index) {
+  removeFrom(index: number) {
     if(index > 0 && index > this.size) return -1;
     else {
       let curr, prev, it = 0;
@@ -84,7 +87,7 @@ class LinkedList {
     }
   }
 
-  removeElement(element) {
+  removeElement(element: any) {
     let curr = this.head;
     let prev = null;
 
@@ -104,7 +107,7 @@ class LinkedList {
     return -1;
   }
 
-  indexOf(element) {
+  indexOf(element: any) {
     let count = 0;
     let curr = this.head;
 
