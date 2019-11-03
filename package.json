@@ -37,6 +37,7 @@
     "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
     "@babel/preset-env": "^7.6.3",
     "@babel/preset-typescript": "^7.6.0",
+    "@types/chrome": "0.0.91",
     "babel-loader": "^8.0.4",
     "node-sass": "^4.13.0",
     "sass-loader": "^8.0.0",
