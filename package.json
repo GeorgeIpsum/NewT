@@ -7,7 +7,12 @@
     "doc": "docs"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "type-check": "tsc --noEmit",
+    "type-check:watch": "npm run type-check -- --watch",
+    "build": "npm run build:types && npm run build:js",
+    "build:types": "tsc --emitDeclarationOnly",
+    "build:js": "babel src --out-dir lib --extensions \".ts\" --source-maps inline"
   },
   "repository": {
     "type": "git",
@@ -22,5 +27,15 @@
   "bugs": {
     "url": "https://github.com/GeorgeIpsum/newt/issues"
   },
-  "homepage": "https://github.com/GeorgeIpsum/newt#readme"
+  "homepage": "https://github.com/GeorgeIpsum/newt#readme",
+  "devDependencies": {
+    "@babel/cli": "^7.6.4",
+    "@babel/core": "^7.6.4",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/plugin-proposal-numeric-separator": "^7.2.0",
+    "@babel/plugin-proposal-object-rest-spread": "^7.6.2",
+    "@babel/preset-env": "^7.6.3",
+    "@babel/preset-typescript": "^7.6.0",
+    "typescript": "^3.6.4"
+  }
 }
