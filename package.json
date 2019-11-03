@@ -1,0 +1,26 @@
+{
+  "name": "newt",
+  "version": "0.1.0",
+  "description": "a new tab page",
+  "main": "newpage.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/GeorgeIpsum/newt.git"
+  },
+  "keywords": [
+    "new-tab-page",
+    "browser-extension"
+  ],
+  "author": "Ibrahim Saberi",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/GeorgeIpsum/newt/issues"
+  },
+  "homepage": "https://github.com/GeorgeIpsum/newt#readme"
+}

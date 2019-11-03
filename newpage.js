@@ -43,6 +43,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
     });
   }
+
+  const tree = new Tree("tree");
+  tree.init();
 });
 
 const animateIn = () => {
@@ -66,10 +69,7 @@ const grow = (initialGrowth) => {
 
   cancelGrowth = setInterval(() => {
     growth += 1;
-    chrome.storage.sync.set({growth}, () => {
-      console.log(`Growth at level ${growth}!`);
-    });
-
+    chrome.storage.sync.set({growth}, () => {});
     growCanvas(growth);
   }, 2500);
 }
