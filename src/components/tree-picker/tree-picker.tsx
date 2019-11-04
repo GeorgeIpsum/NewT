@@ -1,8 +1,10 @@
 import React from 'react';
 import './tree-picker.scss';
 
-type TreePickerProps = {};
-type TreePickerState = {};
+interface TreePickerProps {
+  firstTime: boolean
+};
+interface TreePickerState {};
 
 export default class TreePicker extends React.Component<TreePickerProps, TreePickerState> {
   render() {
@@ -11,4 +13,3 @@ export default class TreePicker extends React.Component<TreePickerProps, TreePic
     );
   }
 }
-

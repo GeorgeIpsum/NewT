@@ -1,14 +1,23 @@
 import React from 'react';
 import './tree.scss';
 
-type TreeProps = {};
-type TreeState = {};
+interface TreeProps {
+  tree: any
+};
+interface TreeState {
+  tree: any
+};
 
 export default class Tree extends React.Component<TreeProps, TreeState> {
+  componentDidMount() {
+    this.state = {
+      tree: this.props.tree
+    }
+  }
+
   render() {
     return(
-      <div className="Tree"></div>
+      <canvas className="tree"></canvas>
     );
   }
 }
-
